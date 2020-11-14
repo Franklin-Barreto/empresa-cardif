@@ -1,14 +1,18 @@
 package br.com.empresa.models;
 
-
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 @Entity
@@ -28,6 +32,10 @@ public class Funcionario {
 	@ManyToOne
 	@JoinColumn(name = "cargo_id")
 	private Cargo cargo;
+
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "funcionario_departamento", joinColumns = @JoinColumn(name = "funcionario_id"), inverseJoinColumns = @JoinColumn(name = "departamento_id"))
+	private Set<Departamento> departamentos;
 
 	public Funcionario(String nome, LocalDate dataNascimento, String documento, Cargo cargo) {
 		super();
@@ -69,4 +77,12 @@ public class Funcionario {
 		this.cargo.addFuncionario(this);
 	}
 
+	public Set<Departamento> getDepartamentos() {
+		return Collections.unmodifiableSet(departamentos);
+	}
+
+	public void adicionarDepartamento(Departamento departamento) {
+		departamentos.add(departamento);
+		departamento.addFuncionario(this);
+	}
 }
