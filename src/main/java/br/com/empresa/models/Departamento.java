@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -23,11 +24,11 @@ public class Departamento {
 	@Column(name = "departamento_name", length = 50, nullable = false)
 	private String nome;
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "funcionario_fk")
 	private Funcionario chefe;
 
-	@ManyToMany(mappedBy = "departamentos")
+	@ManyToMany(mappedBy = "departamentos", fetch = FetchType.LAZY)
 	private Set<Funcionario> funcionarios;
 
 	public Integer getId() {

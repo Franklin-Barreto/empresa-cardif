@@ -1,15 +1,15 @@
 package br.com.empresa.models;
 
-import java.util.Collections;
-import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
 public class Cargo {
 
@@ -20,10 +20,7 @@ public class Cargo {
 
 	@Column(name = "cargo_name", length = 50, nullable = false)
 	private String nome;
-
-	@OneToMany(mappedBy = "cargo")
-	private Set<Funcionario> funcionarios;
-
+	
 	public Cargo() {
 	}
 
@@ -37,14 +34,5 @@ public class Cargo {
 
 	public String getNome() {
 		return nome;
-	}
-
-	public Set<Funcionario> getFuncionarios() {
-		return Collections.unmodifiableSet(funcionarios);
-	}
-
-	public void addFuncionario(Funcionario funcionario) {
-		this.funcionarios.add(funcionario);
-		funcionario.setCargo(this);
 	}
 }

@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,6 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 @Entity
 public class Funcionario {
@@ -24,17 +26,24 @@ public class Funcionario {
 	private Integer id;
 	@Column(name = "funcionario_name", length = 50, nullable = false)
 	private String nome;
+
+	@Transient
 	private int idade;
+
+	@Column(name = "funcionario_birthday")
 	private LocalDate dataNascimento;
+
 	@Column(name = "funcionario_document", length = 50, nullable = false)
 	private String documento;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "cargo_id")
 	private Cargo cargo;
 
-	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "funcionario_departamento", joinColumns = @JoinColumn(name = "funcionario_id"), inverseJoinColumns = @JoinColumn(name = "departamento_id"))
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE },fetch = FetchType.EAGER)
+	@JoinTable(name = "funcionario_departamento", 
+	joinColumns = @JoinColumn(name = "funcionario_id"), 
+	inverseJoinColumns = @JoinColumn(name = "departamento_id"))
 	private Set<Departamento> departamentos;
 
 	public Funcionario(String nome, LocalDate dataNascimento, String documento, Cargo cargo) {
@@ -57,7 +66,7 @@ public class Funcionario {
 	}
 
 	public int getIdade() {
-		return idade;
+		return LocalDate.now().compareTo(dataNascimento);
 	}
 
 	public LocalDate getDataNascimento() {
@@ -72,10 +81,6 @@ public class Funcionario {
 		return cargo;
 	}
 
-	public void setCargo(Cargo cargo) {
-		this.cargo = cargo;
-		this.cargo.addFuncionario(this);
-	}
 
 	public Set<Departamento> getDepartamentos() {
 		return Collections.unmodifiableSet(departamentos);
