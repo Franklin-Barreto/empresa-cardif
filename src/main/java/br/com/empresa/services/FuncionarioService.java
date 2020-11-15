@@ -89,4 +89,10 @@ public class FuncionarioService {
 
 		return funcHistorico;
 	}
+
+	public void demitir(Long id) {
+		Funcionario funcionario = getFuncionarioById(id);
+		funcionario.getDepartamentoAtivo().setDataFim();
+		funcionarioRepository.save(funcionario);
+	}
 }
