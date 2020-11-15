@@ -29,7 +29,7 @@ public class FuncionarioService {
 	}
 
 	public List<Funcionario> findAll() {
-		return funcionarioRepository.findAll();
+		return funcionarioRepository.findAllByDepartamentosDataFimIsNull();
 	}
 
 	public Funcionario save(FuncionarioDto funcionarioDto) {

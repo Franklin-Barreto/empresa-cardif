@@ -30,12 +30,12 @@ public class FuncionarioController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<Funcionario>> findAll() {
+	public ResponseEntity<List<Funcionario>> listarTodosOsFuncionariosAtivos() {
 		return ResponseEntity.ok(funcionarioService.findAll());
 	}
 
 	@PostMapping
-	public ResponseEntity<Funcionario> save(@RequestBody FuncionarioDto funcionarioDto,
+	public ResponseEntity<Funcionario> salvarFuncionario(@RequestBody FuncionarioDto funcionarioDto,
 			UriComponentsBuilder uriBuilder) {
 		Funcionario funcionarioSalvo = funcionarioService.save(funcionarioDto);
 		URI location = getLocation(uriBuilder, "funcionario/{id}", funcionarioSalvo.getId());
@@ -43,18 +43,18 @@ public class FuncionarioController {
 	}
 
 	@GetMapping("/departamento/{id}")
-	public ResponseEntity<List<Funcionario>> findAllByDepartamento(@PathVariable("id") Long id) {
+	public ResponseEntity<List<Funcionario>> listarFuncionariosPorDepartamento(@PathVariable("id") Long id) {
 		return ResponseEntity.ok(funcionarioService.findAllByDepartamento(id));
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Funcionario> update(@PathVariable Long id, @RequestBody FuncionarioDto funcionarioDto,
+	public ResponseEntity<Funcionario> atualizarFuncionario(@PathVariable Long id, @RequestBody FuncionarioDto funcionarioDto,
 			UriComponentsBuilder uriBuilder) {
 		return ResponseEntity.ok(funcionarioService.update(id, funcionarioDto));
 	}
 
 	@GetMapping("/departamento/historico/{id}")
-	public ResponseEntity<FuncionarioHistoricoDto> listarDepartamentosFuncionario(@PathVariable Long id) {
+	public ResponseEntity<FuncionarioHistoricoDto> listarHistoricoDepartamentosFuncionario(@PathVariable Long id) {
 		FuncionarioHistoricoDto historico = funcionarioService.getHistoricoDepartamentos(id);
 		return ResponseEntity.ok(historico);
 	}

@@ -13,5 +13,7 @@ public interface FuncionarioRepository extends JpaRepository<Funcionario, Long> 
 	List<Funcionario> findAll();
 	
 	List<Funcionario> findAllByDepartamentosDepartamentoId(Long id);
+	
+	List<Funcionario> findAllByDepartamentosDataFimIsNull();
 
 }
