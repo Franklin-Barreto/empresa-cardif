@@ -5,12 +5,17 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.empresa.models.Funcionario;
+import br.com.empresa.models.dtos.FuncionarioDto;
+import br.com.empresa.models.dtos.FuncionarioHistoricoDto;
 import br.com.empresa.services.FuncionarioService;
 
 @RestController
@@ -29,10 +34,33 @@ public class FuncionarioController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Funcionario> save(Funcionario funcionario, UriComponentsBuilder uriBuilder) {
-		Funcionario funcionarioSalvo = funcionarioService.save(funcionario);
-		URI location = uriBuilder.pathSegment("funcionario/{id}").buildAndExpand(funcionarioSalvo.getId()).toUri();
+	public ResponseEntity<Funcionario> save(@RequestBody FuncionarioDto funcionarioDto,
+			UriComponentsBuilder uriBuilder) {
+		Funcionario funcionarioSalvo = funcionarioService.save(funcionarioDto);
+		URI location = getLocation(uriBuilder, "funcionario/{id}", funcionarioSalvo.getId());
 		return ResponseEntity.created(location).body(funcionarioSalvo);
+	}
+
+	@GetMapping("/departamento/{id}")
+	public ResponseEntity<List<Funcionario>> findAllByDepartamento(@PathVariable("id") Long id) {
+		return ResponseEntity.ok(funcionarioService.findAllByDepartamento(id));
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<Funcionario> update(@PathVariable Long id, @RequestBody FuncionarioDto funcionarioDto,
+			UriComponentsBuilder uriBuilder) {
+		return ResponseEntity.ok(funcionarioService.update(id, funcionarioDto));
+	}
+
+	@GetMapping("/departamento/historico/{id}")
+	public ResponseEntity<FuncionarioHistoricoDto> listarDepartamentosFuncionario(@PathVariable Long id) {
+		FuncionarioHistoricoDto historico = funcionarioService.getHistoricoDepartamentos(id);
+		return ResponseEntity.ok(historico);
+	}
+
+	private URI getLocation(UriComponentsBuilder uriBuilder, String path, Long id) {
+		URI location = uriBuilder.pathSegment(path).buildAndExpand(id).toUri();
+		return location;
 	}
 
 }

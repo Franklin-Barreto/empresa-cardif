@@ -1,8 +1,5 @@
 package br.com.empresa.models;
 
-import java.util.Collections;
-import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,8 +7,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
+
 
 @Entity
 public class Departamento {
@@ -19,7 +16,7 @@ public class Departamento {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "departamento_id")
-	private Integer id;
+	private Long id;
 
 	@Column(name = "departamento_name", length = 50, nullable = false)
 	private String nome;
@@ -28,10 +25,8 @@ public class Departamento {
 	@JoinColumn(name = "funcionario_fk")
 	private Funcionario chefe;
 
-	@ManyToMany(mappedBy = "departamentos", fetch = FetchType.LAZY)
-	private Set<Funcionario> funcionarios;
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
@@ -47,12 +42,4 @@ public class Departamento {
 		this.chefe = chefe;
 	}
 
-	public Set<Funcionario> getFuncionarios() {
-		return Collections.unmodifiableSet(funcionarios);
-	}
-
-	public void addFuncionario(Funcionario funcionario) {
-		this.funcionarios.add(funcionario);
-		funcionario.adicionarDepartamento(this);
-	}
 }

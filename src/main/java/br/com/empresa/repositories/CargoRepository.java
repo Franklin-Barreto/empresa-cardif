@@ -4,6 +4,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import br.com.empresa.models.Cargo;
 
-public interface CargoRepository extends CrudRepository<Cargo, Integer> {
+public interface CargoRepository extends CrudRepository<Cargo, Long> {
 
 }

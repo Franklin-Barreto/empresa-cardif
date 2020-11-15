@@ -26,4 +26,8 @@ public class CargoService {
 	public List<Cargo> findAll() {
 		return (List<Cargo>) cargoRepository.findAll();
 	}
+	
+	public Cargo findById(Long id) {
+		return cargoRepository.findById(id).orElseThrow(()->new RuntimeException("Cargo inexistente"));
+	}
 }

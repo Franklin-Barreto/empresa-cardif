@@ -2,6 +2,7 @@ package br.com.empresa.models;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -12,18 +13,26 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Funcionario {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "funcionario_id")
-	private Integer id;
+	private Long id;
 	@Column(name = "funcionario_name", length = 50, nullable = false)
 	private String nome;
 
@@ -40,11 +49,8 @@ public class Funcionario {
 	@JoinColumn(name = "cargo_id")
 	private Cargo cargo;
 
-	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE },fetch = FetchType.EAGER)
-	@JoinTable(name = "funcionario_departamento", 
-	joinColumns = @JoinColumn(name = "funcionario_id"), 
-	inverseJoinColumns = @JoinColumn(name = "departamento_id"))
-	private Set<Departamento> departamentos;
+	@OneToMany(mappedBy = "funcionario", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<FuncionarioDepartamento> departamentos;
 
 	public Funcionario(String nome, LocalDate dataNascimento, String documento, Cargo cargo) {
 		super();
@@ -52,12 +58,13 @@ public class Funcionario {
 		this.dataNascimento = dataNascimento;
 		this.documento = documento;
 		this.cargo = cargo;
+		this.departamentos = new HashSet<>();
 	}
 
 	public Funcionario() {
 	}
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
@@ -81,13 +88,22 @@ public class Funcionario {
 		return cargo;
 	}
 
-
-	public Set<Departamento> getDepartamentos() {
+	public Set<FuncionarioDepartamento> getDepartamentos() {
 		return Collections.unmodifiableSet(departamentos);
 	}
 
 	public void adicionarDepartamento(Departamento departamento) {
-		departamentos.add(departamento);
-		departamento.addFuncionario(this);
+		FuncionarioDepartamento funcionarioDepartamento = new FuncionarioDepartamento(this, departamento);
+		departamentos.add(funcionarioDepartamento);
+	}
+
+	@JsonIgnore
+	public FuncionarioDepartamento getDepartamentoAtivo() {
+		return departamentos.stream().filter(fd -> fd.getDataFim() == null).findFirst()
+				.orElseThrow(() -> new RuntimeException("Não existe existe"));
+	}
+
+	public void setCargo(Cargo cargo) {
+		this.cargo = cargo;
 	}
 }
